@@ -1,3 +1,13 @@
+const timezones = {
+  Amsterdam: "Europe/Amsterdam",
+  "New York": "America/New_York",
+  "Los Angeles": "America/Los_Angeles",
+  Tokyo: "Asia/Tokyo",
+  Sydney: "Australia/Sydney",
+  Sorocaba: "America/Sao_Paulo",
+  // Add more cities and their timezones as needed
+};
+
 function refreshWeather(response) {
   let temperatureElement = document.querySelector("#temperature");
   let temperature = response.data.temperature.current;
@@ -6,37 +16,21 @@ function refreshWeather(response) {
   let humidityElement = document.querySelector("#humidity");
   let windSpeedElement = document.querySelector("#wind-speed");
   let timeElement = document.querySelector("#time");
-  let date = new Date(response.data.time * 1000);
   let iconElement = document.querySelector("#icon");
 
   cityElement.innerHTML = response.data.city;
-  timeElement.innerHTML = formatDate(date);
   descriptionElement.innerHTML = response.data.condition.description;
   humidityElement.innerHTML = `${response.data.temperature.humidity}%`;
   windSpeedElement.innerHTML = `${response.data.wind.speed}km/h`;
   temperatureElement.innerHTML = Math.round(temperature);
   iconElement.innerHTML = `<img src="${response.data.condition.icon_url}" class="weather-app-icon" />`;
-}
 
-function formatDate(date) {
-  let minutes = date.getMinutes();
-  let hours = date.getHours();
-  let days = [
-    "Sunday",
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-  ];
-  let day = days[date.getDay()];
+  let timestamp = response.data.time * 1000; // Convert to milliseconds
+  let city = response.data.city;
+  let timezone = timezones[city] || "UTC"; // Use the predefined timezone or default to UTC
 
-  if (minutes < 10) {
-    minutes = `0${minutes}`;
-  }
-
-  return `${day} ${hours}:${minutes}`;
+  let localTime = moment.tz(timestamp, timezone).format("dddd HH:mm");
+  timeElement.innerHTML = localTime;
 }
 
 function searchCity(city) {
@@ -48,7 +42,6 @@ function searchCity(city) {
 function handleSearchSubmit(event) {
   event.preventDefault();
   let searchInput = document.querySelector("#search-form-input");
-
   searchCity(searchInput.value);
 }
 
