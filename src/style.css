@@ -115,9 +115,16 @@ header {
 }
 
 .weather-forecast {
+  display: flex;
+  justify-content: space-around;
   margin-top: 20px;
   text-align: center;
   color: #bd93f9;
+}
+
+.weather-forecast-day {
+  flex: 1;
+  margin: 0 10px;
 }
 .weather-forecast-date {
   text-align: center;
