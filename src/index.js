@@ -1,4 +1,5 @@
 const weatherApiKey = "83f9b46743o5b9ba5591000677t89ea4"; // SheCodes API Key
+const timezoneApiKey = "EW1V6QOC5V12";
 
 function refreshWeather(response) {
   let temperatureElement = document.querySelector("#temperature");
@@ -19,26 +20,21 @@ function refreshWeather(response) {
 
   const lat = response.data.coordinates.latitude;
   const lon = response.data.coordinates.longitude;
-  const timestamp = response.data.time * 1000;
+  const timestamp = response.data.time * 1000; // Convert to milliseconds
 
   getTimeZone(lat, lon, timestamp, timeElement);
   getForecast(response.data.city);
 }
 
 function getTimeZone(lat, lon, timestamp, timeElement) {
-  const timeZoneApiUrl = `http://api.timezonedb.com/v2.1/get-time-zone?key=YOUR_TIMEZONE_DB_API_KEY&format=json&by=position&lat=${lat}&lng=${lon}`;
+  const timeZoneApiUrl = `http://api.timezonedb.com/v2.1/get-time-zone?key=${timezoneApiKey}&format=json&by=position&lat=${lat}&lng=${lon}`;
 
   axios
     .get(timeZoneApiUrl)
     .then((response) => {
       if (response.data && response.data.status === "OK") {
         const timeZone = response.data.zoneName;
-        const localTime = new Intl.DateTimeFormat("en-US", {
-          weekday: "long",
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZone: timeZone,
-        }).format(new Date(timestamp));
+        const localTime = moment.tz(timestamp, timeZone).format("dddd HH:mm");
         timeElement.innerHTML = localTime;
       } else {
         console.error("Error fetching time zone data:", response.data);
