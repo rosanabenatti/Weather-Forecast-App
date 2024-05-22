@@ -1,5 +1,5 @@
-const weatherApiKey = "83f9b46743o5b9ba5591000677t89ea4"; // SheCodes API Key
-const timezoneApiKey = "EW1V6QOC5V12"; // TimezoneDB API Key
+const weatherApiKey = "83f9b46743o5b9ba5591000677t89ea4";
+const timezoneApiKey = "EW1V6QOC5V12";
 
 function refreshWeather(response) {
   let temperatureElement = document.querySelector("#temperature");
