@@ -1,5 +1,4 @@
 const weatherApiKey = "83f9b46743o5b9ba5591000677t89ea4"; // SheCodes API Key
-const timezoneApiKey = "EW1V6QOC5V12";
 
 function refreshWeather(response) {
   let temperatureElement = document.querySelector("#temperature");
@@ -9,61 +8,62 @@ function refreshWeather(response) {
   let humidityElement = document.querySelector("#humidity");
   let windSpeedElement = document.querySelector("#wind-speed");
   let timeElement = document.querySelector("#time");
+  let date = new Date(response.data.time * 1000);
   let iconElement = document.querySelector("#icon");
 
   cityElement.innerHTML = response.data.city;
+  timeElement.innerHTML = formatDate(date);
   descriptionElement.innerHTML = response.data.condition.description;
   humidityElement.innerHTML = `${response.data.temperature.humidity}%`;
   windSpeedElement.innerHTML = `${response.data.wind.speed} km/h`;
   temperatureElement.innerHTML = Math.round(temperature);
   iconElement.innerHTML = `<img src="${response.data.condition.icon_url}" class="weather-app-icon" />`;
 
-  const lat = response.data.coordinates.latitude;
-  const lon = response.data.coordinates.longitude;
-  const timestamp = response.data.time * 1000; // Convert to milliseconds
-
-  getTimeZone(lat, lon, timestamp, timeElement);
   getForecast(response.data.city);
 }
 
-function getTimeZone(lat, lon, timestamp, timeElement) {
-  const timeZoneApiUrl = `http://api.timezonedb.com/v2.1/get-time-zone?key=${timezoneApiKey}&format=json&by=position&lat=${lat}&lng=${lon}`;
+function formatDate(date) {
+  let minutes = date.getMinutes();
+  let hours = date.getHours();
+  let days = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  let day = days[date.getDay()];
 
-  axios
-    .get(timeZoneApiUrl)
-    .then((response) => {
-      if (response.data && response.data.status === "OK") {
-        const timeZone = response.data.zoneName;
-        const localTime = moment.tz(timestamp, timeZone).format("dddd HH:mm");
-        timeElement.innerHTML = localTime;
-      } else {
-        console.error("Error fetching time zone data:", response.data);
-      }
-    })
-    .catch((error) => {
-      console.error("Error fetching time zone data:", error);
-    });
+  if (minutes < 10) {
+    minutes = `0${minutes}`;
+  }
+
+  return `${day} ${hours}:${minutes}`;
 }
 
 function searchCity(city) {
-  const apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${weatherApiKey}&units=metric`;
+  let apiUrl = `https://api.shecodes.io/weather/v1/current?query=${city}&key=${weatherApiKey}&units=metric`;
   axios.get(apiUrl).then(refreshWeather);
 }
 
 function handleSearchSubmit(event) {
   event.preventDefault();
   let searchInput = document.querySelector("#search-form-input");
+
   searchCity(searchInput.value);
 }
 
 function formatDay(timestamp) {
   let date = new Date(timestamp * 1000);
   let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
   return days[date.getDay()];
 }
 
 function getForecast(city) {
-  const apiUrl = `https://api.shecodes.io/weather/v1/forecast?query=${city}&key=${weatherApiKey}&units=metric`;
+  let apiUrl = `https://api.shecodes.io/weather/v1/forecast?query=${city}&key=${weatherApiKey}&units=metric`;
   axios.get(apiUrl).then(displayForecast);
 }
 
