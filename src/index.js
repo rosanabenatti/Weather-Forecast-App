@@ -5,7 +5,6 @@ const timezones = {
   Tokyo: "Asia/Tokyo",
   Sydney: "Australia/Sydney",
   Sorocaba: "America/Sao_Paulo",
-  // Add more cities and their timezones as needed
 };
 
 function refreshWeather(response) {
@@ -25,12 +24,14 @@ function refreshWeather(response) {
   temperatureElement.innerHTML = Math.round(temperature);
   iconElement.innerHTML = `<img src="${response.data.condition.icon_url}" class="weather-app-icon" />`;
 
-  let timestamp = response.data.time * 1000; // Convert to milliseconds
+  let timestamp = response.data.time * 1000;
   let city = response.data.city;
-  let timezone = timezones[city] || "UTC"; // Use the predefined timezone or default to UTC
+  let timezone = timezones[city] || "UTC";
 
   let localTime = moment.tz(timestamp, timezone).format("dddd HH:mm");
   timeElement.innerHTML = localTime;
+
+  getForecast(response.data.city);
 }
 
 function searchCity(city) {
@@ -53,22 +54,25 @@ function getForecast(city) {
 
 function displayForecast(response) {
   console.log(response.data);
-
-  let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   let forecastHtml = "";
 
-  days.forEach(function (day) {
-    forecastHtml =
-      forecastHtml +
-      `
+  response.data.daily.forEach(function (day, index) {
+    // Convert day index to day name
+    let dayName = moment().add(index, "days").format("ddd");
+
+    forecastHtml += `
       <div class="weather-forecast-day">
-        <div class="weather-forecast-date">${day}</div>
-        <div class="weather-forecast-icon">🌤️</div>
+        <div class="weather-forecast-date">${dayName}</div>
+        <div class="weather-forecast-icon"><img src="${
+          day.condition.icon_url
+        }" class="weather-app-icon"/></div>
         <div class="weather-forecast-temperatures">
           <div class="weather-forecast-temperature">
-            <strong>15º</strong>
+            <strong>${Math.round(day.temperature.maximum)}°</strong>
           </div>
-          <div class="weather-forecast-temperature">9º</div>
+          <div class="weather-forecast-temperature">${Math.round(
+            day.temperature.minimum
+          )}°</div>
         </div>
       </div>
     `;
@@ -82,4 +86,3 @@ let searchFormElement = document.querySelector("#search-form");
 searchFormElement.addEventListener("submit", handleSearchSubmit);
 
 searchCity("Amsterdam");
-getForecast("Paris");
