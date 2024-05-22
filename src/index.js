@@ -19,6 +19,7 @@ function refreshWeather(response) {
   const lat = response.data.coordinates.latitude;
   const lon = response.data.coordinates.longitude;
   const timestamp = response.data.time * 1000;
+
   displayLocalTime(lat, lon, timestamp);
   getForecast(response.data.city);
 }
@@ -62,10 +63,8 @@ function displayForecast(response) {
         <div class="weather-forecast-temperatures">
           <div class="weather-forecast-temperature">
             <strong>${Math.round(day.temperature.maximum)}°</strong>
+            <span>${Math.round(day.temperature.minimum)}°</span>
           </div>
-          <div class="weather-forecast-temperature">${Math.round(
-            day.temperature.minimum
-          )}°</div>
         </div>
       </div>
     `;
