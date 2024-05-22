@@ -1,4 +1,5 @@
-const weatherApiKey = "83f9b46743o5b9ba5591000677t89ea4";
+const weatherApiKey = "83f9b46743o5b9ba5591000677t89ea4"; // SheCodes API Key
+const timezoneApiKey = "EW1V6QOC5V12"; // TimezoneDB API Key
 
 function refreshWeather(response) {
   let temperatureElement = document.querySelector("#temperature");
@@ -7,6 +8,7 @@ function refreshWeather(response) {
   let descriptionElement = document.querySelector("#description");
   let humidityElement = document.querySelector("#humidity");
   let windSpeedElement = document.querySelector("#wind-speed");
+  let timeElement = document.querySelector("#time");
   let iconElement = document.querySelector("#icon");
 
   cityElement.innerHTML = response.data.city;
@@ -20,16 +22,27 @@ function refreshWeather(response) {
   const lon = response.data.coordinates.longitude;
   const timestamp = response.data.time * 1000;
 
-  displayLocalTime(lat, lon, timestamp);
+  getTimeZone(lat, lon, timestamp, timeElement);
   getForecast(response.data.city);
 }
 
-function displayLocalTime(lat, lon, timestamp) {
-  const localTime = moment(timestamp)
-    .utcOffset(0)
-    .add(lon / 15, "hours")
-    .format("dddd HH:mm");
-  document.querySelector("#time").innerHTML = localTime;
+function getTimeZone(lat, lon, timestamp, timeElement) {
+  const timeZoneApiUrl = `http://api.timezonedb.com/v2.1/get-time-zone?key=${timezoneApiKey}&format=json&by=position&lat=${lat}&lng=${lon}`;
+
+  axios
+    .get(timeZoneApiUrl)
+    .then((response) => {
+      if (response.data && response.data.status === "OK") {
+        const timeZone = response.data.zoneName;
+        const localTime = moment.tz(timestamp, timeZone).format("dddd HH:mm");
+        timeElement.innerHTML = localTime;
+      } else {
+        console.error("Error fetching time zone data:", response.data);
+      }
+    })
+    .catch((error) => {
+      console.error("Error fetching time zone data:", error);
+    });
 }
 
 function searchCity(city) {
@@ -43,6 +56,12 @@ function handleSearchSubmit(event) {
   searchCity(searchInput.value);
 }
 
+function formatDay(timestamp) {
+  let date = new Date(timestamp * 1000);
+  let days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  return days[date.getDay()];
+}
+
 function getForecast(city) {
   const apiUrl = `https://api.shecodes.io/weather/v1/forecast?query=${city}&key=${weatherApiKey}&units=metric`;
   axios.get(apiUrl).then(displayForecast);
@@ -52,19 +71,18 @@ function displayForecast(response) {
   let forecastHtml = "";
 
   response.data.daily.forEach(function (day, index) {
-    let dayName = moment().add(index, "days").format("ddd");
-
+    let dayName = formatDay(day.time);
     forecastHtml += `
       <div class="weather-forecast-day">
         <div class="weather-forecast-date">${dayName}</div>
-        <div class="weather-forecast-icon"><img src="${
-          day.condition.icon_url
-        }" class="weather-app-icon"/></div>
+        <img src="${day.condition.icon_url}" class="weather-forecast-icon" />
         <div class="weather-forecast-temperatures">
           <div class="weather-forecast-temperature">
-            <strong>${Math.round(day.temperature.maximum)}°</strong>
-            <span>${Math.round(day.temperature.minimum)}°</span>
+            <strong>${Math.round(day.temperature.maximum)}º</strong>
           </div>
+          <div class="weather-forecast-temperature">${Math.round(
+            day.temperature.minimum
+          )}º</div>
         </div>
       </div>
     `;
