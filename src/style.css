@@ -5,18 +5,18 @@ body {
   margin: 0;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Center content vertically */
+  justify-content: center;
   align-items: center;
   height: 100vh;
   padding: 20px;
 }
 
 .page-title {
-  font-size: 36px; /* Title font size */
-  color: #bd93f9; /* Matching the design */
-  text-shadow: 0 0 10px #bd93f9, 0 0 20px #bd93f9; /* Stronger glow effect */
-  margin-top: 10px; /* Space above the title */
-  margin-bottom: 30px; /* Adjusted space below the title */
+  font-size: 36px;
+  color: #bd93f9;
+  text-shadow: 0 0 10px #bd93f9, 0 0 20px #bd93f9;
+  margin-top: 10px;
+  margin-bottom: 30px;
 }
 
 a {
@@ -36,7 +36,7 @@ a:hover {
   padding: 20px;
   box-shadow: 0 0 20px #bd93f9;
   text-align: center;
-  margin-top: 10px; /* Space above the weather app */
+  margin-top: 10px;
 }
 
 header {
@@ -52,6 +52,7 @@ header {
   font-size: 16px;
   padding: 10px;
   border-radius: 5px;
+  margin-bottom: 10px;
 }
 
 .search-form-button {
@@ -62,7 +63,6 @@ header {
   font-size: 16px;
   cursor: pointer;
   border-radius: 5px;
-  margin-top: 10px;
 }
 
 .search-form-button:hover {
@@ -123,23 +123,32 @@ header {
 }
 
 .weather-forecast-day {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   margin: 0 10px;
 }
+
 .weather-forecast-date {
-  text-align: center;
   color: #ff79c6;
   font-size: 16px;
-  line-height: 20px;
   margin-bottom: 10px;
 }
 
-.weather-forecast-temperature-min {
-  opacity: 0.5;
+.weather-forecast-icon {
+  margin-bottom: 10px;
 }
 
 .weather-forecast-temperatures {
   font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.weather-forecast-temperature strong {
+  display: block;
+  margin-bottom: 5px;
 }
 
 footer {
