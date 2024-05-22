@@ -1,5 +1,5 @@
-const weatherApiKey = "83f9b46743o5b9ba5591000677t89ea4";
-const timezoneApiKey = "EW1V6QOC5V12";
+const weatherApiKey = "83f9b46743o5b9ba5591000677t89ea4"; // SheCodes API Key
+const timezoneApiKey = "EW1V6QOC5V12"; // TimezoneDB API Key
 
 function refreshWeather(response) {
   let temperatureElement = document.querySelector("#temperature");
@@ -20,7 +20,7 @@ function refreshWeather(response) {
 
   const lat = response.data.coordinates.latitude;
   const lon = response.data.coordinates.longitude;
-  const timestamp = response.data.time * 1000;
+  const timestamp = response.data.time * 1000; // Convert to milliseconds
 
   getTimeZone(lat, lon, timestamp, timeElement);
   getForecast(response.data.city);
